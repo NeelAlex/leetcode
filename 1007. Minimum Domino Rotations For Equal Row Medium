@@ -1,0 +1,99 @@
+/*
+1007. Minimum Domino Rotations For Equal Row
+Medium
+
+In a row of dominoes, A[i] and B[i] represent the top and bottom halves of the i-th domino.  (A domino is a tile with two numbers from 1 to 6 - one on each half of the tile.)
+
+We may rotate the i-th domino, so that A[i] and B[i] swap values.
+
+Return the minimum number of rotations so that all the values in A are the same, or all the values in B are the same.
+
+If it cannot be done, return -1.
+
+Input: A = [2,1,2,4,2,2], B = [5,2,6,2,3,2]
+Output: 2
+Explanation: 
+The first figure represents the dominoes as given by A and B: before we do any rotations.
+If we rotate the second and fourth dominoes, we can make every value in the top row equal to 2, as indicated by the second figure.
+Example 2:
+
+Input: A = [3,5,1,2,3], B = [3,6,3,3,4]
+Output: -1
+Explanation: 
+In this case, it is not possible to rotate the dominoes to make one row of values equal.
+ 
+
+Note:
+
+1 <= A[i], B[i] <= 6
+2 <= A.length == B.length <= 20000
+
+*/
+
+class Solution {
+public:
+    vector<bool> canBeDone(vector<int> A, vector<int>B, int size){
+        int x = A[0];
+        int y = B[0];
+        bool canX = true;
+        bool canY = true;
+        vector<bool> status;
+        for(int i = 1; i < size; i++){
+            if(A[i] != x && B[i] != x){
+                canX = false;
+                break;
+            }               
+        }
+        for(int i = 1; i < size; i++){
+            if(A[i] != y && B[i] != y){
+                canY = false;
+                break;
+            }               
+        }
+        status.push_back(canX);
+        status.push_back(canY);
+        return status;
+    }
+    int minDominoRotations(vector<int>& a, vector<int>& b) {
+        ios::sync_with_stdio(false);
+        int size = a.size();
+        int result = INT_MAX;
+        vector<bool> status = canBeDone(a, b, size);
+        if(!(status[0] || status[1])){
+            return -1;
+        }
+        if(status[0]){
+            int countInA = 1;
+            for(int i = 1; i < size; i++){
+                if(a[i] == a[0]){
+                    countInA++;
+                }
+            }
+            result = min(result, min(countInA, size- countInA));
+            int countInB = 0;
+            for(int i = 0; i < size; i++){
+                if(b[i] == a[0]){
+                    countInB++;
+                }
+            }
+            result = min(result, min(countInB, size- countInB));
+        }
+        if(status[1]){
+            int countInB = 1;
+            for(int i = 1; i < size; i++){
+                if(b[i] == b[0]){
+                    countInB++;
+                }
+            }
+            result = min(result, min(countInB, size-countInB));
+            int countInA = 0;
+            for(int i = 0; i < size; i++){
+                if(a[i] == b[0]){
+                    countInA++;
+                }
+            }
+            result = min(result, min(countInA, size-countInA));
+        }
+        return result;
+    }
+};
