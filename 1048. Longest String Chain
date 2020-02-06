@@ -1,0 +1,106 @@
+/*
+1048. Longest String Chain
+Medium
+
+Given a list of words, each word consists of English lowercase letters.
+
+Let's say word1 is a predecessor of word2 if and only if we can add exactly one letter anywhere in word1 to make it equal to word2.  For example, "abc" is a predecessor of "abac".
+
+A word chain is a sequence of words [word_1, word_2, ..., word_k] with k >= 1, where word_1 is a predecessor of word_2, word_2 is a predecessor of word_3, and so on.
+
+Return the longest possible length of a word chain with words chosen from the given list of words.
+
+ 
+
+Example 1:
+
+Input: ["a","b","ba","bca","bda","bdca"]
+Output: 4
+Explanation: one of the longest word chain is "a","ba","bda","bdca".
+
+Example 2:
+
+Input: ["ks","kss","kssq","ksqsq"]
+Output: 4
+
+Note:
+
+1 <= words.length <= 1000
+1 <= words[i].length <= 16
+words[i] only consists of English lowercase letters.
+
+*/
+====================================================
+
+class Solution {
+public:
+    int distanceBetween(string s1, string s2){
+        int count = 0;
+        int size = s1.size() - s2.size();
+        if(abs(size) > 1){
+            return 2;
+        }
+        for(int i=0, j=0; i<s1.size() && j<s2.size();){
+            if(s1[i]!=s2[j]){
+                count++;
+                j++;
+            }
+            else{
+                i++; j++;
+            }
+        }
+        if(count == 0){
+            return abs(size);
+        }
+        return count;
+    }
+    void compareArrays(vector< pair < string, int> > arr0, vector< pair < string, int> > arr, int* dp){
+        for(int i = 0; i< arr0.size(); i++){
+            string s1 = arr0[i].first;
+            int index1 = arr0[i].second;
+            for(int j = 0 ; j < arr.size(); j++){
+                string s2 = arr[j].first;
+                int index2 = arr[j].second;           
+                if(distanceBetween(s1, s2) == 1){
+                    dp[index2] = max(dp[index2], dp[index1]+1);
+                }
+            }
+        }
+    }
+    int longestStrChain(vector<string>& words) {
+        ios::sync_with_stdio(false);
+        sort(words.begin(), words.end());
+        int n = words.size();
+        vector<int> size(n);
+        map<int, vector<pair<string, int> > > mp;
+        for(int i = 0; i < n; i++){
+            size[i] = words[i].size();
+            mp[size[i]].push_back({words[i],i});
+        }
+        int* dp = new int[n];
+        for(int i = 0; i < n; i++){
+            dp[i] = 1;
+        }
+        
+        // data type:  map<int, vector<pair<string, int> > > mp;
+        auto s = mp.begin();
+        int size0 = s->first;
+        vector< pair < string, int> > arr0 = s->second;
+        for( auto it = mp.begin(); it != mp.end(); it++ ){
+            int size = it->first;
+            vector< pair< string, int> > arr = it->second;
+        
+            if(size - size0 == 1){
+                compareArrays(arr0, arr, dp);
+            }
+            size0 = size;
+            arr0 = arr;       
+        }
+        int result = dp[0];
+        for(int i=1; i<n; i++){
+            if(dp[i] > result)
+                result = dp[i];
+        }
+        return result;
+    }    
+};
