@@ -1,0 +1,142 @@
+/*
+68. Text Justification
+Hard
+
+Given an array of words and a width maxWidth, format the text such that each line has exactly maxWidth characters and is fully (left and right) justified.
+
+You should pack your words in a greedy approach; that is, pack as many words as you can in each line. Pad extra spaces ' ' when necessary so that each line has exactly maxWidth characters.
+
+Extra spaces between words should be distributed as evenly as possible. If the number of spaces on a line do not divide evenly between words, the empty slots on the left will be assigned more spaces than the slots on the right.
+
+For the last line of text, it should be left justified and no extra space is inserted between words.
+
+Note:
+
+A word is defined as a character sequence consisting of non-space characters only.
+Each word's length is guaranteed to be greater than 0 and not exceed maxWidth.
+The input array words contains at least one word.
+Example 1:
+
+Input:
+words = ["This", "is", "an", "example", "of", "text", "justification."]
+maxWidth = 16
+Output:
+[
+   "This    is    an",
+   "example  of text",
+   "justification.  "
+]
+Example 2:
+
+Input:
+words = ["What","must","be","acknowledgment","shall","be"]
+maxWidth = 16
+Output:
+[
+  "What   must   be",
+  "acknowledgment  ",
+  "shall be        "
+]
+Explanation: Note that the last line is "shall be    " instead of "shall     be",
+             because the last line must be left-justified instead of fully-justified.
+             Note that the second line is also left-justified becase it contains only one word.
+Example 3:
+
+Input:
+words = ["Science","is","what","we","understand","well","enough","to","explain",
+         "to","a","computer.","Art","is","everything","else","we","do"]
+maxWidth = 20
+Output:
+[
+  "Science  is  what we",
+  "understand      well",
+  "enough to explain to",
+  "a  computer.  Art is",
+  "everything  else  we",
+  "do                  "
+]
+
+=================================================================
+
+class Solution {
+public:
+    vector<string> fullJustify(vector<string>& words, int maxWidth) {
+        ios::sync_with_stdio(false);
+        vector<string> result;
+        vector<string> justifiedString;
+        vector<int> stringCount;
+        string str = "";
+        string smallString = "";
+        int count = 0;
+        for(int i = 0 ; i < words.size();){
+            if(smallString == ""){
+                smallString = smallString + words[i];
+                count++; i++;
+                continue;
+            }
+            if(smallString.size() + words[i].size()+1 <= maxWidth){
+                smallString = smallString + " " + words[i];
+                count++;
+                i++;
+            }
+            else{
+                result.push_back(smallString);
+                stringCount.push_back(count-1);
+                smallString = "";
+                count = 0;      
+            }      
+        }
+        if(!smallString.empty()){
+            result.push_back(smallString);
+            stringCount.push_back(count-1);
+            smallString = "";
+            count = 0;      
+        }
+        
+        // convert the resultant string into a justified string.
+        for(int i = 0 ; i < result.size()-1; i++){
+            smallString = ""; 
+            str = result[i];
+            int noOfSpaceNeeded = 1 ;
+            if(stringCount[i] != 0){
+                noOfSpaceNeeded = noOfSpaceNeeded + (maxWidth - result[i].size())/stringCount[i];
+            }
+            else{
+                noOfSpaceNeeded = (maxWidth - result[i].size());
+            }
+            string space = "";
+            for(int k = 0; k<noOfSpaceNeeded; k++){
+                space += " ";
+            }
+            int extraSpaceFor = 0;
+            if(stringCount[i] != 0){
+                 extraSpaceFor = (maxWidth - result[i].size())%stringCount[i];
+            }
+           
+            for(int j = 0; j < str.size(); j++){
+                if(stringCount[i] == 0){                    
+                    smallString = result[i] + space;
+                    continue;
+                }
+                if(!(str[j] == ' ')){
+                    smallString += str[j];
+                }
+                else{
+                    smallString += space;
+                    if(extraSpaceFor > 0){
+                        smallString += " ";
+                        extraSpaceFor-- ;
+                    }
+                }
+            }
+            justifiedString.push_back(smallString);
+        }
+        str = result[result.size()-1];
+        int noOfSpaceNeeded = maxWidth - str.size();
+        for(int i = 0 ; i<noOfSpaceNeeded; i++){
+            str = str + " ";
+        }
+        justifiedString.push_back(str);  
+        return justifiedString;
+    }
+};
