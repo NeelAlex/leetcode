@@ -32,68 +32,42 @@ Note:
 
 class Solution {
 public:
-    vector<bool> canBeDone(vector<int> A, vector<int>B, int size){
-        int x = A[0];
-        int y = B[0];
-        bool canX = true;
-        bool canY = true;
-        vector<bool> status;
-        for(int i = 1; i < size; i++){
-            if(A[i] != x && B[i] != x){
-                canX = false;
-                break;
-            }               
-        }
-        for(int i = 1; i < size; i++){
-            if(A[i] != y && B[i] != y){
-                canY = false;
-                break;
-            }               
-        }
-        status.push_back(canX);
-        status.push_back(canY);
-        return status;
-    }
     int minDominoRotations(vector<int>& a, vector<int>& b) {
         ios::sync_with_stdio(false);
-        int size = a.size();
-        int result = INT_MAX;
-        vector<bool> status = canBeDone(a, b, size);
-        if(!(status[0] || status[1])){
-            return -1;
+        int a0 = a[0];
+        int b0 = b[0];
+        int count = INT_MAX;
+        int countA = 0 , countB = 0;
+        for(int i = 0; i < a.size(); i++){
+            if(a[i] != a0){
+                countA ++;
+            }
+            if(b[i] != a0){
+                countB++;
+            }
+            if(a[i] != a0 && b[i]!= a0){
+                countA = countB = INT_MAX;
+                break;
+            }
         }
-        if(status[0]){
-            int countInA = 1;
-            for(int i = 1; i < size; i++){
-                if(a[i] == a[0]){
-                    countInA++;
-                }
+        count = min(count, min(countA, countB) );
+        //cout<<count<<" ";
+        countA = 0;
+        countB = 0;
+        for(int i = 0; i < b.size(); i++){
+            if(a[i] != b0){
+                countA++;
             }
-            result = min(result, min(countInA, size- countInA));
-            int countInB = 0;
-            for(int i = 0; i < size; i++){
-                if(b[i] == a[0]){
-                    countInB++;
-                }
+            if(b[i] != b0){
+                countB++;
             }
-            result = min(result, min(countInB, size- countInB));
+            if(a[i] != b0 && b[i] != b0){
+                countA = countB = INT_MAX ;
+                break;
+            }
         }
-        if(status[1]){
-            int countInB = 1;
-            for(int i = 1; i < size; i++){
-                if(b[i] == b[0]){
-                    countInB++;
-                }
-            }
-            result = min(result, min(countInB, size-countInB));
-            int countInA = 0;
-            for(int i = 0; i < size; i++){
-                if(a[i] == b[0]){
-                    countInA++;
-                }
-            }
-            result = min(result, min(countInA, size-countInA));
-        }
-        return result;
+        count = min(count, min(countA, countB));
+        //cout<<count;
+        return count == INT_MAX ? -1 : count;
     }
 };
